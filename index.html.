@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Burguers</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#0f0f0f;color:#fff;}
+header{background:#ff2b2b;padding:15px;text-align:center;font-size:22px;font-weight:bold;}
+.container{padding:15px;}
+
+.card{
+background:#1c1c1c;
+border-radius:12px;
+margin-bottom:15px;
+overflow:hidden;
+box-shadow:0 0 10px rgba(0,0,0,0.5);
+}
+
+.card img{
+width:100%;
+height:160px;
+object-fit:cover;
+}
+
+.cardContent{
+padding:12px;
+}
+
+button{
+background:#ff2b2b;
+color:#fff;
+border:none;
+padding:10px;
+border-radius:6px;
+margin-top:5px;
+width:100%;
+}
+
+.totalBox{position:fixed;bottom:0;width:100%;background:#111;padding:10px;border-top:2px solid red;}
+.painel{position:fixed;top:0;right:0;width:85%;height:100%;background:#111;padding:15px;display:none;overflow:auto;}
+.itemCarrinho{border-bottom:1px solid #333;padding:10px;}
+.qtyBox{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+.qtyBtn{width:35px;height:35px;}
+.remove{background:#444;}
+.desconto{color:#00ff88;font-size:14px;}
+
+</style>
+</head>
+
+<body>
+
+<header onclick="abrirPainel()">🍔 Fast Burguers</header>
+
+<div class="container">
+
+<h2>🍔 Hambúrgueres</h2>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1550547660-d9450f859349">
+<div class="cardContent">
+<h3>X-Burguer</h3>
+<p>R$18,90</p>
+<button onclick="add('X-Burguer',18.9)">Adicionar</button>
+</div>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd">
+<div class="cardContent">
+<h3>X-Salada</h3>
+<p>R$20,90</p>
+<button onclick="add('X-Salada',20.9)">Adicionar</button>
+</div>
+</div>
+
+<h2>🔥 Combos (10% OFF)</h2>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d">
+<div class="cardContent">
+<h3>Combo 1</h3>
+<p><span style="text-decoration:line-through;">R$29,90</span> R$26,91</p>
+<p class="desconto">🔥 10% OFF</p>
+<button onclick="add('Combo 1',26.91)">Adicionar</button>
+</div>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1550317138-10000687a72b">
+<div class="cardContent">
+<h3>Combo 2</h3>
+<p><span style="text-decoration:line-through;">R$34,90</span> R$31,41</p>
+<p class="desconto">🔥 10% OFF</p>
+<button onclick="add('Combo 2',31.41)">Adicionar</button>
+</div>
+</div>
+
+</div>
+
+<div class="totalBox">
+<div>Subtotal: R$ <span id="subtotal">0</span></div>
+<div>Entrega: R$ 5,00</div>
+<div><strong>Total: R$ <span id="total">0</span></strong></div>
+<button onclick="finalizar()">Finalizar Pedido</button>
+</div>
+
+<div class="painel" id="painel">
+<h2>🛒 Carrinho</h2>
+<div id="lista"></div>
+<button onclick="fechar()">Fechar</button>
+</div>
+
+<script>
+let carrinho = {};
+
+function add(nome, preco){
+if(!carrinho[nome]){
+carrinho[nome] = {qtd:1, preco:preco};
+}else{
+carrinho[nome].qtd++;
+}
+atualizar();
+}
+
+function alterar(nome, tipo){
+if(tipo === "mais") carrinho[nome].qtd++;
+if(tipo === "menos"){
+carrinho[nome].qtd--;
+if(carrinho[nome].qtd <= 0) delete carrinho[nome];
+}
+atualizar();
+}
+
+function remover(nome){
+delete carrinho[nome];
+atualizar();
+}
+
+function atualizar(){
+let subtotal = 0;
+let html = "";
+
+for(let item in carrinho){
+let dados = carrinho[item];
+let totalItem = dados.qtd * dados.preco;
+subtotal += totalItem;
+
+html += `
+<div class="itemCarrinho">
+<strong>${item}</strong><br>
+R$ ${dados.preco} x ${dados.qtd} = R$ ${totalItem.toFixed(2)}
+
+<div class="qtyBox">
+<button onclick="alterar('${item}','menos')">-</button>
+<span>${dados.qtd}</span>
+<button onclick="alterar('${item}','mais')">+</button>
+</div>
+
+<button class="remove" onclick="remover('${item}')">Remover</button>
+</div>`;
+}
+
+document.getElementById("lista").innerHTML = html;
+document.getElementById("subtotal").innerText = subtotal.toFixed(2);
+document.getElementById("total").innerText = (subtotal + 5).toFixed(2);
+}
+
+function finalizar(){
+let total = document.getElementById("total").innerText;
+let msg="Pedido:%0A";
+
+for(let item in carrinho){
+msg += `${carrinho[item].qtd}x ${item}%0A`;
+}
+
+msg += `%0ATotal: R$ ${total}`;
+window.open("https://wa.me/5547996575888?text="+msg);
+}
+
+function abrirPainel(){document.getElementById('painel').style.display='block';}
+function fechar(){document.getElementById('painel').style.display='none';}
+</script>
+
+</body>
+</html>
